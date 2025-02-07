@@ -1,0 +1,221 @@
+ /* <uniquifier>: Use a unique and descriptive class name */
+ /* <weight>: Use a value from 300 to 800 */
+ @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap');
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: black;
+  color: #333;
+  margin: 0;;
+}
+
+h1, h2 {
+    color: white;
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: "width" 100;
+  }
+
+p {
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "width" 100;
+  }
+
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Pousse les éléments aux extrémités */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: #333;
+  }
+  
+  .navbar li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .navbar .center-items {
+    display: flex;
+    justify-content: space-evenly; /* Répartit uniformément les éléments */
+    flex-grow: 1; /* Remplir l'espace restant */
+    gap: 15px; /* Espacement entre les éléments du centre */
+  }
+  
+  .navbar li:last-child {
+    margin-left: auto; /* Pousse le dernier élément à droite */
+  }
+  
+  /* Style des liens de la navbar */
+  .navbar a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 15px;
+    transition: background-color 0.3s;
+  }
+  
+  .navbar a .material-icons {
+    font-size: 30px;
+    vertical-align: middle;
+  }
+  
+  .navbar a .text {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s ease-in-out;
+    font-size: 16px;
+  }
+  
+  .navbar a:hover .text {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .navbar a:hover {
+    background-color: #4CAF50;
+    border-radius: 4px;
+  }
+
+/* Conteneur principal pour les formulaires */
+.auth-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 50px;
+  gap: 20px;
+}
+
+.auth-register, .auth-login {
+  background-color: #333;
+  padding: 20px;
+  border-radius: 8px;
+  width: 45%;
+  color: white;
+}
+
+/* Formulaires */
+.auth-register h2, .auth-login h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.auth-register label, .auth-login label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.auth-register input, .auth-login input {
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 15px;
+  border-radius: 5px;
+}
+
+.auth-register input:focus, .auth-login input:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  outline: none;
+}
+
+.build {
+    background-color: #4CAF50; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    border: none; /* Supprime la bordure par défaut */
+    border-radius: 25px; /* Coins arrondis */
+    padding: 12px 24px; /* Espacement du bouton */
+    font-size: 18px; /* Taille du texte */
+    display: inline-flex; /* Utilisation de flexbox */
+    align-items: center; /* Aligne les éléments de manière horizontale */
+    justify-content: center; /* Centre les éléments */
+    gap: 10px; /* Espacement entre l'icône et le texte */
+    cursor: pointer; /* Pointeur au survol */
+    position: relative; /* Nécessaire pour l'animation */
+    transition: background-color 0.3s ease; /* Animation pour la couleur de fond */
+    margin: 5px;
+
+  }
+  
+  .build:hover {
+    background-color: #45a049; /* Couleur de fond au survol */
+  }
+  
+  /* Style de l'icône */
+  .build .material-icons {
+    font-size: 24px; /* Taille de l'icône */
+    transition: transform 0.3s ease-in-out; /* Animation pour l'icône */
+  }
+  
+  /* Style du texte */
+  .build .button-text {
+    visibility: hidden; /* Le texte est caché par défaut */
+    opacity: 0; /* Le texte est invisible par défaut */
+    font-size: 16px; /* Taille du texte */
+    transition: visibility 0s, opacity 0.3s ease-in-out; /* Animation pour faire apparaître le texte */
+  }
+  
+  /* Animation au survol : afficher le texte et animer l'icône */
+  .build:hover .button-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .build:hover .material-icons {
+    transform: rotate(360deg); /* L'icône tourne quand on survole */
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  .options-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Ajoute un espacement entre les champs */
+    padding: 20px; /* Ajout d'un peu de marge interne pour ne pas toucher les bords */
+    max-width: 400px; /* Limite la largeur de la colonne */
+    width: 100%; /* Assure qu'il occupe tout l'espace disponible sans dépasser */
+  }
+  
+  .options-fields textarea {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 16px;
+    padding: 10px; /* Un peu de padding pour les textes */
+    text-align: left;
+    line-height: 1.4;
+    resize: none;
+    overflow: hidden;
+    vertical-align: top;
+  }
+  
+  .options-fields textarea:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  }
+  
+  .options-fields label {
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+  }
+  
+  .options-list {
+    max-width: 100%; /* S'assure que la liste occupe tout l'espace disponible */
+  }

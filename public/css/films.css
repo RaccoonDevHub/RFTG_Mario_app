@@ -1,0 +1,69 @@
+/* Style du tableau */
+.table {
+    width: 100%;
+    border-collapse: collapse; /* Évite les bordures doubles */
+    font-family: Arial, sans-serif;
+}
+
+/* Style pour l'en-tête du tableau */
+.table-header th {
+    background-color: #4CAF50; /* Couleur de fond pour l'en-tête */
+    color: white; /* Couleur de texte */
+    padding: 12px;
+    text-align: left;
+}
+
+/* Style pour les lignes de données */
+.table-row td {
+    border: 1px solid #ddd; /* Bordures normales pour les cellules */
+    padding: 10px;
+    text-align: left;
+}
+
+/* Alternance de couleurs pour les lignes */
+.table-row:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Style pour le survol des lignes */
+.table-row:hover {
+    background-color: #ddd;
+}
+
+.w-5.h-5 {
+    width: 10px; /* ajustez la largeur */
+    height: 10px; /* ajustez la hauteur */
+}
+
+
+/* flammes tunning  */
+
+
+.flame-text {
+    font-size: 15px; /* Taille de la police */
+    font-weight: bold; /* Gras pour le texte */
+    color: black; /* Couleur par défaut du texte */
+    background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+    background-size: 200%; /* Augmentez la taille pour un effet de défilement plus fluide */
+    background-clip: text; /* Clip le fond au texte (pour Chrome/Safari) */
+    -webkit-background-clip: text; /* Clip le fond au texte (pour Chrome/Safari) */
+    transition: background-position 0.5s, color 0.5s; /* Transition douce pour la position d'arrière-plan */
+}
+
+/* Lors du survol */
+.flame-text:hover {
+    color: transparent; /* Rendre le texte transparent pour voir le dégradé */
+    animation: rainbow 2s linear infinite; /* Animation dynamique au survol */
+}
+
+@keyframes rainbow {
+    0% {
+        background-position: 0%;
+    }
+    100% {
+        background-position: 100%; /* Défilement complet */
+    }
+}
+
+
+
