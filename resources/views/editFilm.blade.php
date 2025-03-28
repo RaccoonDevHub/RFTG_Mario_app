@@ -1,4 +1,4 @@
-<form id="filmForm" data-route="/films/add">
+<form id="filmForm" data-route="/films/update">
     @csrf
     <input type="text" name="title" placeholder="Titre" required>
     <input type="text" name="description" placeholder="Description" required>
@@ -12,6 +12,6 @@
     <input type="text" name="rating" placeholder="Classification" required>
     <input type="hidden" name="lastUpdate" value="{{ now() }}">
     <input type="number" name="idDirector" placeholder="ID du Réalisateur" required>
-    <button id=""filmForm>envoyer</button>
+    <button id=""filmForm>Mettre à jour</button>
 </form>
 <div id="message"></div>

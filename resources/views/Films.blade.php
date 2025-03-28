@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>films</title>
     <link rel="stylesheet" href="{{ asset('css/films.css') }}">
 </head>
 <body>
     
     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-            {{ __('Dashboard') }}
-        </x-nav-link>
         <x-nav-link :href="route('films')" :active="request()->routeIs('films')">
             {{__('films') }}
         </x-nav-link>
@@ -79,49 +77,166 @@
             <option value="2024">1999</option>
         </select>
     </div>
-    <div>
-    @include('addFilm', ['films' => $films])
     <button onclick="openmodal()" class="addFilm">
         Ajouter un film
     </button>
-        
+    <div id="modal" style="display:none;">
+        <div class="modal-content">
+            @include('addFilm', ['films' => $films])
+        </div>
+    
     <script>
-document.getElementById("filmForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Empêche le rechargement de la page
-
-    let formData = new FormData(this); // Récupère les données du formulaire
-    let url = this.getAttribute("data-route"); // Récupère l'URL depuis l'attribut data-route
-
-    fetch(url, { // Utilise l'URL récupérée
-        method: "POST",
-        body: formData,
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value // Ajoute le token CSRF
+    function openmodal() {
+        let modal = document.getElementById("modal");
+        if (modal) {
+            modal.style.display = "block";
+        } else {
+            console.error("Le modal n'existe pas !");
         }
-    })
-    .then(response => response.json()) // Convertit la réponse en JSON
-    .then(data => {
-        document.getElementById("message").innerText = data.message; // Affiche le message de succès
+    }
 
-        setTimeout(() => {
-            closeModal(); // Ferme le pop-up après 1.5 secondes
-            location.reload(); // Recharge la page pour voir le film ajouté
-        }, 1500);
-    })
-    .catch(error => console.error("Erreur:", error)); // Gère les erreurs
-});
+    function closeModal() {
+        let modal = document.getElementById("modal");
+        if (modal) {
+            modal.style.display = "none";
+        }
+    }
 
+    document.addEventListener("DOMContentLoaded", function() {
+        let form = document.getElementById("filmForm");
+        if (form) {
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                let formData = new FormData(this);
+                let url = this.getAttribute("data-route");
+
+                fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("message").innerText = data.message;
+                    setTimeout(() => {
+                        closeModal();
+                        location.reload();
+                    }, 1500);
+                })
+                .catch(error => console.error("Erreur:", error));
+            });
+        }
+    });
 </script>
+
 </div>
-<button class="deleteFilm">
+<button class="deleteFilm" id="deleteFilm">
     supprimer un film
 </button>
-<button class="editFilm">
-    Editer un film
+<button onclick="openmodal()" class="addFilm">
+        Editer un film
 </button>
+<div id="modal" style="display:none;">
+        <div class="modal-content">
+            @include('editFilm', ['films' => $films])
+        </div>
+    
+    <script>
+    function openmodal() {
+        let modal = document.getElementById("modal");
+        if (modal) {
+            modal.style.display = "block";
+        } else {
+            console.error("Le modal n'existe pas !");
+        }
+    }
+
+    function closeModal() {
+        let modal = document.getElementById("modal");
+        if (modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let form = document.getElementById("filmForm");
+        if (form) {
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                let formData = new FormData(this);
+                let url = this.getAttribute("data-route");
+
+                fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("message").innerText = data.message;
+                    setTimeout(() => {
+                        closeModal();
+                        location.reload();
+                    }, 1500);
+                })
+                .catch(error => console.error("Erreur:", error));
+            });
+        }
+    });
+</script>
+
 <button class="rentalFollowing">
     suivi des locations
 </button>
+<script> 
+    document.addEventListener("DOMContentLoaded", function (){
+        let selectedFilms = [];
+        console.log("selected film chargé");
+        document.querySelectorAll(".select_checkbox").forEach(checkbox => {
+            checkbox.addEventListener("change", function() {
+                let filmId = parseInt(this.value);
+
+                if (this.checked) {
+                    selectedFilms.push(filmId);
+                } else {
+                    selectedFilms =selectedFilms.filter(id => id !== filmId);
+                }
+                console.log(selectedFilms);
+            });
+        });
+
+    document.getElementById("deleteFilm").addEventListener("click", function () {
+        if (selectedFilms.length === 0) {
+            alert("Veuillez sélectionner au moins un film.");
+            return;
+        }
+
+        fetch("{{ route('films.delete') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ filmIds: selectedFilms })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Réponse du serveur :", data);
+            if (data.success) {
+                alert("Films supprimés avec succès !");
+                location.reload(); // Recharge la page après suppression
+            } else {
+                alert("Erreur lors de la suppression.");
+            }
+        })
+        .catch(error => console.error("Erreur :", error));
+    });
+});
+</script>
 </body>
 </html>
 
