@@ -11,8 +11,11 @@ class ApiToadController extends Controller
     {
         $currentPage = request()->input('page', 1);
         $perPage = 20;
+        $adress = env('TOAD_SERVER');
+        $port = env('TOAD_PORT');
+        $servRequest = $adress.$port;
        // Remplace l'URL par celle de ton fichier JSON
-        $url = 'http://localhost:8080/toad/film/all'; // ou l'URL de ton API
+        $url = $servRequest.'/toad/film/all'; // ou l'URL de ton API
         $response = Http::withoutVerifying()->get($url);
 
         // Vérifie si la réponse est correcte

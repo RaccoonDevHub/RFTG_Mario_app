@@ -25,6 +25,11 @@ route::get('/catalogue',function() {
     return view('catalogue');
 });
 
+
+Route::get  ('/films/edit',   [FilmController::class, 'edit'])->name('films.edit');
+Route::post ('/films/update', [FilmController::class, 'updateFilm'])->name('films.update');
+
+
 route::get('/catalogue', function() {
     return (new ApiToadController)->ApiToad('catalogue');
 })->name('catalogue');
@@ -37,5 +42,5 @@ route::get('/linReg', function() {
 
 Route::post('/films/add', [FilmController::class, 'store'])->name('films.add');
 Route::post('/films/delete', [FilmController::class, 'deleteFilm'])->name('films.delete');
-Route::post('/films/update', [FilmController::class, 'UpdateFilm'])->name('film.update');
+Route::post('/films/update', [FilmController::class, 'UpdateFilm'])->name('films.update');
 
