@@ -14,8 +14,8 @@
     <x-nav-link :href="route('films')" :active="request()->routeIs('films')">
       {{ __('films') }}
     </x-nav-link>
-    <x-nav-link :href="route('catalogue')" :active="request()->routeIs('catalogue')">
-      {{ __('catalogue') }}
+    <x-nav-link :href="route('inventory.getInventory')" :active="request()->routeIs('inventory.getInventory')">
+      {{ __('inventaire') }}
     </x-nav-link>
   </div>
 
@@ -74,23 +74,15 @@
     Supprimer un film
   </button>
 
-  <button onclick="openmodal('editmodal')" class="editFilm">
-    Éditer un film
-  </button>
-
-  <div id="editmodal"
-     @if(! isset($editFilm)) style="display:none" @endif>
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('editmodal')">&times;</span>
-    @include('editFilm', ['editFilm' => $editFilm ?? null])
+  <button onclick="openEditModal()" class="editFilm">
+  Éditer un film
+</button>
+<div id="editmodal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('editmodal')">&times;</span>
+      @include('editFilm', ['films' => $films])
+    </div>
   </div>
-</div>
-
-  <button class="rentalFollowing">
-    Suivi des locations
-  </button>
-
-  <!-- Script centralisé -->
   <script>
     function openmodal(modalId) {
       let modal = document.getElementById(modalId);
@@ -111,7 +103,8 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-      // Par exemple, pour le formulaire d'ajout de film
+
+      // formulaire d'ajout de film
       let addForm = document.getElementById("filmFormAdd");
       if (addForm) {
         addForm.addEventListener("submit", function(event) {
@@ -138,7 +131,7 @@
         });
       }
 
-      // Idem pour le formulaire d'édition (filmFormEdit)
+      // formulaire d'édition (filmFormEdit)
       let editForm = document.getElementById("filmFormEdit");
       if (editForm) {
         editForm.addEventListener("submit", function(event) {
@@ -158,7 +151,7 @@
               document.getElementById("message").innerText = data.message;
               setTimeout(() => {
                   closeModal('editmodal');
-                  location.reload();
+                   location.reload();
               }, 1500);
           })
           .catch(error => console.error("Erreur:", error));
@@ -166,7 +159,7 @@
       }
     });
 
-    // Gestion de la suppression
+    // formulaire de suppression
     document.addEventListener("DOMContentLoaded", function () {
       let selectedFilms = [];
       document.querySelectorAll(".select_checkbox").forEach(checkbox => {
@@ -208,6 +201,45 @@
       });
     });
   </script>
+ <script>
+function openEditModal() {
+  const checked = document.querySelectorAll('.select_checkbox:checked');
+  if (checked.length !== 1) {
+    return alert("Sélectionnez exactement un film à éditer.");
+  }
+  const filmId = checked[0].value;
+
+  fetch(`/films/data/${filmId}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Film introuvable");
+      return res.json();
+    })
+    .then(data => {
+      // Remplissage des inputs : utilisez exactement les mêmes IDs que dans votre form
+      document.getElementById('filmIdInput').value             = data.filmId;
+      document.getElementById('titleInput').value              = data.title;
+      document.getElementById('descriptionInput').value        = data.description;
+      document.getElementById('releaseYearInput').value        = data.releaseYear;
+      document.getElementById('languageIdInput').value         = data.languageId;
+      document.getElementById('originalLanguageIdInput').value = data.originalLanguageId;
+      document.getElementById('rentalDurationInput').value     = data.rentalDuration;
+      document.getElementById('rentalRateInput').value         = data.rentalRate;
+      document.getElementById('lengthInput').value             = data.length;
+      document.getElementById('replacementCostInput').value    = data.replacementCost;
+      document.getElementById('ratingInput').value             = data.rating;
+      document.getElementById('lastUpdateInput').value         = data.lastUpdate;
+
+      // Enfin, ouvrez votre modal
+      openmodal('editmodal');
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Impossible de charger les données du film.");
+    });
+}
+</script>
+
+
 
 </body>
 </html>

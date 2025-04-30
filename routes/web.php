@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiToadController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\FilmController;
+use App\Http\Controllers\inventoryController;
 
 // Route::get('/dashboard', function () {
     // return view('dashboard');
@@ -21,20 +22,18 @@ Route::get('/', function () {
 });
 Route::post('/login_staff', [authController::class, 'login'])->name('login_staff');
 
-route::get('/catalogue',function() {
-    return view('catalogue');
-});
+Route::get('/inventaire', [inventoryController::class, 'getInventory'])->name('inventory.getInventory');
 
+// POST pour ajouter un film en stock
+Route::post('/inventaire/add', [InventoryController::class, 'storeInventory'])
+     ->name('inventory.store');
 
-Route::get  ('/films/edit',   [FilmController::class, 'edit'])->name('films.edit');
-Route::post ('/films/update', [FilmController::class, 'updateFilm'])->name('films.update');
+// POST pour supprimer des films du stock
+Route::post('/inventaire/delete', [InventoryController::class, 'deleteInventory'])
+     ->name('inventory.delete');
 
-
-route::get('/catalogue', function() {
-    return (new ApiToadController)->ApiToad('catalogue');
-})->name('catalogue');
-
-route ::get('/catalogue', [ApiToadController::class, 'ApiToad'])->name('catalogue');
+Route::get('/films/data/{id}', [FilmController::class, 'getFilmData'])
+     ->name('films.data');
 
 route::get('/linReg', function() {
     return view('linReg');

@@ -63,42 +63,49 @@ class FilmController extends Controller
 
 
 
-    public function edit(Request $request)
+    public function getFilmData($id)
     {
-        // 1. On valide qu'on a bien un ID numérique
-        $request->validate([
-            'id' => 'required|integer',
+        // (valider $id si vous voulez)
+        $adress = env('TOAD_SERVER');
+        $port = env('TOAD_PORT');
+        $servRequest = $adress.$port;
+        $endpointGetFilm="/toad/film/getById?id=";
+        $query=['id'=>$id];
+        $url=$servRequest.$endpointGetFilm;
+
+        Log::info('→ HTTP GET vers remote API', [
+            'url'   => $url,
+            'query' => $query,
         ]);
+        
 
-        // 2. On construit l’URL de votre API (TOAD_SERVER + TOAD_PORT)
-        $base = config('app.TOAD_SERVER') . ':' . config('app.TOAD_PORT');
-
-        // 3. On appelle l’endpoint pour récupérer 1 film
-        $respEdit = Http::get("{$base}/api/films/{$request->id}");
-        if ($respEdit->failed()) {
-            abort(404, 'Film introuvable');
+        // Appel à l’API distante
+        $resp = Http::get($url,$query);
+        Log::info('← Réponse remote API', [
+            'status'   => $resp->status(),
+            'response' => $resp->body(),
+        ]);
+        
+        if ($resp->failed()) {
+            Log::error('getFilmData a retourné une erreur', [
+                'url'      => $url,
+                'query'    => $query,
+                'status'   => $resp->status(),
+                'response' => $resp->body(),
+              ]);
+            return response()->json(['error'=>'Film introuvable'], 404);
         }
 
-        // 4. On decode en objet PHP
-        $editFilm = json_decode($respEdit->body());
-
-        // 5. (Optionnel) on récupère aussi toute la liste pour l’affichage
-        $respList = Http::get("{$base}/api/films");
-        if ($respList->failed()) {
-            abort(500, 'Impossible de charger la liste des films');
-        }
-        // ici on récupère un tableau d’objets
-        $films = json_decode($respList->body());
-
-        // 6. On renvoie la même vue, avec les deux variables
-        return view('films.index', compact('films','editFilm'));
+        // On renvoie directement le JSON côté front
+        return response()->json($resp->json());
     }
 
     public function updateFilm(Request $request)
     {
+        // 1) Validation des données
         $data = $request->validate([
             'id'                => 'required|integer',
-            'title'             => 'required|string',
+            'title'             => 'required|string|max:255',
             'description'       => 'required|string',
             'releaseYear'       => 'required|integer',
             'languageId'        => 'required|integer',
@@ -107,21 +114,62 @@ class FilmController extends Controller
             'rentalRate'        => 'required|numeric',
             'length'            => 'nullable|integer',
             'replacementCost'   => 'required|numeric',
-            'rating'            => 'required|string',
-            'lastUpdate'        => 'required|date',
-            'idDirector'        => 'required|integer',
+            'rating'            => 'required|string|max:10',
+        ]);
+        $payload = [
+            'title'             => $data['title'],
+            'description'       => $data['description'],
+            'releaseYear'       => $data['releaseYear'],
+            'languageId'        =>$data['languageId'],
+            'originalLanguageId'=> $data['originalLanguageId'] ?? 0,
+            'rentalDuration'    => $data['rentalDuration'],
+            'rentalRate'        => $data['rentalRate'],
+            'length'            => $data['length'] ?? 0,
+            'replacementCost'   => $data['replacementCost'],
+            'rating'            => $data['rating'],
+            // lastUpdate attendu
+            'lastUpdate'        => now()->toDateTimeString(),
+          ];
+
+        // 2) Construction de l'URL de l'API distante
+        $adress = env('TOAD_SERVER');
+        $port = env('TOAD_PORT');
+        $servRequest = $adress.$port;
+        $id       = $data['id'];
+        $endpointUpdateFilm="/toad/film/update/{$id}";
+        $url=$servRequest.$endpointUpdateFilm;
+        
+        Log::info('→ Remote updateFilm request', [
+            'url'  => $url,
+            'data' => $data,
         ]);
 
-        $base = config('app.TOAD_SERVER') . ':' . config('app.TOAD_PORT');
+        // 3) Envoi de la requête PUT ou POST à l'API (ici POST JSON)
+        $response = Http::asForm()->put($url, $payload);
 
-        // On envoie en POST ou PUT selon votre API
-        $resp = Http::asJson()->post("{$base}/api/films/update", $data);
+        Log::info('Remote updateFilm response', [
+            'status'   => $response->status(),
+            'response' => $response->body(),
+          ]);
+      
 
-        if ($resp->failed()) {
-            return back()->withErrors('Échec de la mise à jour');
+        // 4) Gestion du retour
+        if ($response->failed()) {
+            $message = $response->json('message') 
+                 ?? 'Échec de la mise à jour';
+        // Toujours renvoyer du JSON avec un code erreur
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], 400);
         }
 
-        return back()->with('success','Film mis à jour !');
+        // 5) En cas de succès, flash message et retour
+        return response()->json([
+            'success' => true,
+            'message' => 'Film mis à jour avec succès !',
+        ]);
     }
-} 
+}
+
 

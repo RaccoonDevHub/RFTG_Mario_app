@@ -1,4 +1,4 @@
-<form id="filmForm" data-route="/films/add">
+<form id="filmFormAdd" data-route="/films/add">
     @csrf
     <input type="text" name="title" placeholder="Titre" required>
     <input type="text" name="description" placeholder="Description" required>
